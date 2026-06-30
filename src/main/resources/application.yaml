@@ -1,1 +1,14 @@
-spring.application.name=document-sync-service
+spring:
+  application:
+    name: document-sync-service
+
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.accenture.documentsync: DEBUG

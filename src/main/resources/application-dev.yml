@@ -1,0 +1,12 @@
+docusign:
+  base-url: https://demo.docusign.net/restapi
+  account-id: 20e566cd-023a-41cc-a9a6-61db5b600289
+  integration-key: d0a10af5-d2e8-4107-bb83-f02cf46190e6
+  user-id: fe534e43-c8d2-4bda-bdb6-1a5af9c45607
+  private-key-path: C:/DocuSignKeys/docusign-private.pem
+  oauth-base-url: https://account-d.docusign.com
+
+app:
+  retry:
+    max-attempts: 3
+    delay: 1000
