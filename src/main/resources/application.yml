@@ -7,6 +7,11 @@ spring:
 
 server:
   port: 8080
+gcp:
+  storage:
+    project-id: docusignsync
+    bucket-name: document-sync-demo
+    credentials-path: "C:/DocuSignKeys/docusignsync-8fbeb99824c8.json"
 
 logging:
   level:
