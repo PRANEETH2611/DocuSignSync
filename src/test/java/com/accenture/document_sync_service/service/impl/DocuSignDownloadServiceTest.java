@@ -1,10 +1,12 @@
 package com.accenture.document_sync_service.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.springframework.web.client.RestClient;
+        
+import java.net.http.HttpClient;
+
+import org.junit.jupiter.api.Test;
 
 import com.accenture.document_sync_service.config.DocusignProperties;
 import com.accenture.document_sync_service.exception.DocumentSyncException;
@@ -18,8 +20,8 @@ class DocuSignDownloadServiceTest {
         AuthenticationService authenticationService =
                 mock(AuthenticationService.class);
 
-        RestClient restClient =
-                mock(RestClient.class);
+        HttpClient httpClient =
+                mock(HttpClient.class);
 
         DocusignProperties properties =
                 new DocusignProperties();
@@ -32,13 +34,14 @@ class DocuSignDownloadServiceTest {
         DocuSignDownloadService service =
                 new DocuSignDownloadService(
                         authenticationService,
-                        restClient,
+                        httpClient,
                         properties
                 );
 
         assertThrows(
                 DocumentSyncException.class,
-                () -> service.downloadCompletedDocument("19612a77-06c2-8a87-805f-c7d732661ec8")
+                () -> service.downloadCompletedDocument(
+                        "19612a77-06c2-8a87-805f-c7d732661ec8")
         );
     }
 }
