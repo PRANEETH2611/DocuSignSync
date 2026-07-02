@@ -6,7 +6,13 @@ spring:
     active: dev
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+
+document-sync:
+  scheduler:
+    retry-limit: 3
+    fixed-delay: 60000
+
 gcp:
   storage:
     project-id: docusignsync
