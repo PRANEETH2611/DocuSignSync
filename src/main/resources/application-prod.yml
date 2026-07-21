@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/document-sync}
+      uri: ${SPRING_DATA_MONGODB_URI}
 
 gcp:
   storage:

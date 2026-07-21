@@ -17,7 +17,4 @@ public class GoogleCloudStorageProperties {
     @NotBlank
     private String bucketName;
 
-    @NotBlank
-    private String credentialsPath;
-
 }

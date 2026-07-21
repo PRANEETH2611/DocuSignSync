@@ -12,6 +12,6 @@ public class DocuSignWebhookData {
 
     private String envelopeId;
 
-    private EnvelopeSummary envelopeSummary;
+    private String userId;
 
 }

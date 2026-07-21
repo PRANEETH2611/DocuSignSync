@@ -5,29 +5,26 @@ import org.junit.jupiter.api.Test;
 
 class GoogleCloudStoragePropertiesTest {
 
-    @Test
-    void shouldStorePropertiesCorrectly() {
+        @Test
+        void shouldStorePropertiesCorrectly() {
 
-        GoogleCloudStorageProperties properties =
-                new GoogleCloudStorageProperties();
+                GoogleCloudStorageProperties properties = new GoogleCloudStorageProperties();
 
-        properties.setProjectId("project-id");
-        properties.setBucketName("bucket-name");
-        properties.setCredentialsPath("credentials.json");
+                properties.setProjectId("project-id");
+                properties.setBucketName("bucket-name");
+                // properties.setCredentialsPath("credentials.json");
 
-        assertEquals(
-                "project-id",
-                properties.getProjectId()
-        );
+                assertEquals(
+                                "project-id",
+                                properties.getProjectId());
 
-        assertEquals(
-                "bucket-name",
-                properties.getBucketName()
-        );
+                assertEquals(
+                                "bucket-name",
+                                properties.getBucketName());
 
-        assertEquals(
-                "credentials.json",
-                properties.getCredentialsPath()
-        );
-    }
+                // assertEquals(
+                // "credentials.json",
+                // properties.getCredentialsPath()
+                // );
+        }
 }

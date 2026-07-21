@@ -29,20 +29,44 @@ public class DocuSignAuthenticationService implements AuthenticationService {
     private final DocusignProperties properties;
     private final Clock clock;
 
+    private volatile AccessToken cachedToken;
+
     @Override
-    public AccessToken getAccessToken() {
+    public synchronized AccessToken getAccessToken() {
+
+        if (isTokenValid()) {
+
+            log.debug("Using cached DocuSign access token.");
+
+            return cachedToken;
+        }
 
         log.info("Authenticating with DocuSign.");
+
+        cachedToken = authenticate();
+
+        return cachedToken;
+    }
+
+    private boolean isTokenValid() {
+
+        return cachedToken != null
+                && Instant.now(clock)
+                        .isBefore(cachedToken.expiresAt());
+    }
+
+    private AccessToken authenticate() {
 
         try {
 
             String jwt = jwtGenerator.generateJwt();
 
             MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+
             form.add(
                     "grant_type",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
-            );
+                    "urn:ietf:params:oauth:grant-type:jwt-bearer");
+
             form.add("assertion", jwt);
 
             AuthenticationResponse response = restClient.post()
@@ -52,18 +76,19 @@ public class DocuSignAuthenticationService implements AuthenticationService {
                     .retrieve()
                     .body(AuthenticationResponse.class);
 
-            if (response == null || response.getAccessToken() == null) {
+            if (response == null
+                    || response.getAccessToken() == null) {
+
                 throw new DocumentSyncException(
-                        "DocuSign authentication returned an empty response."
-                );
+                        "DocuSign authentication returned an empty response.");
             }
 
             log.info("Successfully authenticated with DocuSign.");
 
             return new AccessToken(
                     response.getAccessToken(),
-                    Instant.now(clock).plusSeconds(response.getExpiresIn())
-            );
+                    Instant.now(clock)
+                            .plusSeconds(response.getExpiresIn() - 60));
 
         } catch (DocumentSyncException exception) {
 
@@ -75,8 +100,7 @@ public class DocuSignAuthenticationService implements AuthenticationService {
 
             throw new DocumentSyncException(
                     "Unable to authenticate with DocuSign.",
-                    exception
-            );
+                    exception);
         }
     }
 }

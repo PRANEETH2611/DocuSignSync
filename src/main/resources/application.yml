@@ -4,22 +4,44 @@ spring:
 
   profiles:
     active: dev
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_NAME}
+    password: ${APP-PASSWORD}
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   port: ${PORT:8080}
 
 document-sync:
   scheduler:
-    retry-limit: 3
-    fixed-delay: 60000
-
-gcp:
-  storage:
-    project-id: docusignsync
-    bucket-name: document-sync-demo
-    credentials-path: "C:/DocuSignKeys/docusignsync-8fbeb99824c8.json"
+    retry-limit: ${RETRY_LIMIT:3}
+    fixed-delay: ${SCHEDULER_FIXED_DELAY:60000}
 
 logging:
   level:
     root: INFO
     com.accenture.documentsync: DEBUG
+notification:
+  email:
+    from: no-reply@documentsync.com
+
+    to:
+      - praneeth.accenture.doc@gmail.com
+      - katukuri.p.reddy@accenture.com
+
+    cc:
+      - manager@company.com
+
+    bcc: []
+
+    success-subject: "[SUCCESS] Document Sync Service - Daily Archive Report"
+
+    failure-subject: "[FAILED] Document Sync Service - Archive Job Failed"

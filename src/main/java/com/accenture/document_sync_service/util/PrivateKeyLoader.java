@@ -38,7 +38,7 @@ public class PrivateKeyLoader {
 
             String pem = Files.readString(keyPath);
 
-            if (pem.isBlank()) {
+            if (pem==null || pem.isBlank()) {
                 throw new DocumentSyncException(
                         "Private key file is empty."
                 );
