@@ -30,6 +30,13 @@ public class ExecutionSummary {
 
     private Duration duration;
 
+    public String getFormattedDuration() {
+
+        return String.format("%.2f seconds",
+                duration.toMillis() / 1000.0);
+
+    }
+
     // Processing Statistics
     private int envelopesFound;
 

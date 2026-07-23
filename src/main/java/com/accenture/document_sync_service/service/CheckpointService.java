@@ -9,8 +9,7 @@ public interface CheckpointService {
         SchedulerCheckpoint getCheckpoint();
 
         void updateCheckpoint(
-                        Instant completedDate,
-                        String envelopeId);
+        Instant scheduledRunTime);
 
         void updateRunStatus(
                         String status,

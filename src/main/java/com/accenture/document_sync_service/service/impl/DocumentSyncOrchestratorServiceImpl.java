@@ -15,6 +15,7 @@ import com.accenture.document_sync_service.notification.model.FailureSummary;
 import com.accenture.document_sync_service.notification.service.EmailService;
 import com.accenture.document_sync_service.service.DocumentSyncOrchestratorService;
 import com.accenture.document_sync_service.service.PollingWorkflowService;
+import com.accenture.document_sync_service.service.SchedulerLockService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,37 +29,38 @@ public class DocumentSyncOrchestratorServiceImpl
     private final PollingWorkflowService pollingWorkflowService;
     private final EmailService emailService;
     private final GoogleCloudStorageProperties storageProperties;
+    private final SchedulerLockService schedulerLockService;
 
-    @Override
-    public void synchronizeCompletedDocuments() {
+   @Override
+public void synchronizeCompletedDocuments() {
 
-        log.info("==============================================");
-        log.info("Starting Document Synchronization");
-        log.info("==============================================");
+    if (!schedulerLockService.acquireLock()) {
 
-        try {
+        log.info("Another scheduler instance is already running.");
 
-            ExecutionSummary summary = pollingWorkflowService.executePollingWorkflow();
-
-            emailService.sendSuccessEmail(summary);
-
-            log.info("Success notification email sent.");
-
-        } catch (Exception exception) {
-
-            log.error("Document synchronization failed.", exception);
-
-            ExecutionSummary summary = buildFailureSummary(exception);
-
-            emailService.sendFailureEmail(summary);
-
-            log.info("Failure notification email sent.");
-        }
-
-        log.info("==============================================");
-        log.info("Document Synchronization Finished");
-        log.info("==============================================");
+        return;
     }
+
+    try {
+
+        ExecutionSummary summary =
+                pollingWorkflowService.executePollingWorkflow();
+
+        emailService.sendSuccessEmail(summary);
+
+    } catch (Exception exception) {
+
+        log.error("Document Sync Failed", exception);
+        ExecutionSummary summary =
+                buildFailureSummary(exception);
+
+        emailService.sendFailureEmail(summary);
+
+    } finally {
+
+        schedulerLockService.releaseLock();
+    }
+}
 
     private ExecutionSummary buildFailureSummary(Exception exception) {
 

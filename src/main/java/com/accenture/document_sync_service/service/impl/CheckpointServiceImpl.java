@@ -27,21 +27,17 @@ public class CheckpointServiceImpl
                                 .orElseGet(this::createInitialCheckpoint);
         }
 
-        @Override
-        public void updateCheckpoint(
-                        Instant completedDate,
-                        String envelopeId) {
+       @Override
+public void updateCheckpoint(
+        Instant scheduledRunTime) {
 
-                SchedulerCheckpoint checkpoint = getCheckpoint();
+    SchedulerCheckpoint checkpoint = getCheckpoint();
 
-                checkpoint.setLastProcessedCompletedDate(
-                                completedDate);
+    checkpoint.setLastScheduledRunTime(
+            scheduledRunTime);
 
-                checkpoint.setLastProcessedEnvelopeId(
-                                envelopeId);
-
-                repository.save(checkpoint);
-        }
+    repository.save(checkpoint);
+}
 
         @Override
         public void updateRunStatus(
@@ -65,7 +61,7 @@ public class CheckpointServiceImpl
 
                 SchedulerCheckpoint checkpoint = SchedulerCheckpoint.builder()
                                 .id(CHECKPOINT_ID)
-                                .lastProcessedCompletedDate(INITIAL_CHECKPOINT)
+                                .lastScheduledRunTime(INITIAL_CHECKPOINT)
                                 .build();
 
                 return repository.save(checkpoint);

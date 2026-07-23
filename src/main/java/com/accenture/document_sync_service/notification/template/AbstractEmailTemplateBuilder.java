@@ -158,7 +158,7 @@ public abstract class AbstractEmailTemplateBuilder
                 String.valueOf(summary.getCompletedAt()));
 
         appendRow(html, "Duration",
-                String.valueOf(summary.getDuration()));
+                String.valueOf(summary.getFormattedDuration()));
 
         html.append("""
                     </table>

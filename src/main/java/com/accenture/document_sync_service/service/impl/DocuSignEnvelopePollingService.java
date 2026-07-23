@@ -34,12 +34,13 @@ public class DocuSignEnvelopePollingService
 
         @Override
         public List<EnvelopeInfo> getCompletedEnvelopes(
-                        SchedulerCheckpoint checkpoint) {
+                        Instant fromTime,
+                        Instant toTime) {
 
-                Instant fromDate = checkpoint.getLastProcessedCompletedDate();
-                String lastEnvelopeId = checkpoint.getLastProcessedEnvelopeId();
-
-                log.info("Polling completed envelopes after '{}'.", fromDate);
+                log.info(
+                                "Polling completed envelopes between '{}' and '{}'.",
+                                fromTime,
+                                toTime);
 
                 List<EnvelopeInfo> envelopes = new ArrayList<>();
 
@@ -48,7 +49,8 @@ public class DocuSignEnvelopePollingService
                 while (true) {
 
                         EnvelopeListResponse response = fetchPage(
-                                        fromDate,
+                                        fromTime,
+                                        toTime,
                                         startPosition);
 
                         if (response.getEnvelopes() == null
@@ -76,28 +78,17 @@ public class DocuSignEnvelopePollingService
                                 .sorted(
                                                 Comparator.comparing(EnvelopeInfo::getCompletedDateTime)
                                                                 .thenComparing(EnvelopeInfo::getEnvelopeId))
-                                .filter(envelope -> {
-
-                                        if (fromDate == null) {
-                                                return true;
-                                        }
-
-                                        if (lastEnvelopeId == null) {
-                                                return true;
-                                        }
-
-                                        return !(fromDate.equals(envelope.getCompletedDateTime())
-                                                        && lastEnvelopeId.equals(envelope.getEnvelopeId()));
-                                })
                                 .toList();
         }
 
         private EnvelopeListResponse fetchPage(
-                        Instant checkpoint,
+                        Instant fromTime,
+                        Instant toTime,
                         int startPosition) {
 
                 URI uri = buildPollingUri(
-                                checkpoint,
+                                fromTime,
+                                toTime,
                                 startPosition);
 
                 log.debug(
@@ -110,25 +101,31 @@ public class DocuSignEnvelopePollingService
         }
 
         private URI buildPollingUri(
-                        Instant checkpoint,
+                        Instant fromTime,
+                        Instant toTime,
                         int startPosition) {
 
                 String fromDate = URLEncoder.encode(
-                                DateTimeFormatter.ISO_INSTANT.format(checkpoint),
+                                DateTimeFormatter.ISO_INSTANT.format(fromTime),
+                                StandardCharsets.UTF_8);
+
+                String toDate = URLEncoder.encode(
+                                DateTimeFormatter.ISO_INSTANT.format(toTime),
                                 StandardCharsets.UTF_8);
 
                 String url = String.format(
                                 "%s/v2.1/accounts/%s/envelopes"
                                                 + "?status=completed"
                                                 + "&from_date=%s"
+                                                + "&to_date=%s"
                                                 + "&count=%d"
                                                 + "&start_position=%d",
                                 properties.getBaseUrl(),
                                 properties.getAccountId(),
                                 fromDate,
+                                toDate,
                                 PAGE_SIZE,
                                 startPosition);
-
                 log.info("Polling URI: {}", url);
 
                 return URI.create(url);

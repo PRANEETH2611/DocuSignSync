@@ -17,9 +17,9 @@ public class SchedulerCheckpoint {
     private String id;
 
     /**
-     * Latest completedDateTime successfully archived.
+     * Last successful scheduler execution start time.
      */
-    private Instant lastProcessedCompletedDate;
+    private Instant lastScheduledRunTime;
 
     /**
      * Last scheduler execution time.
@@ -35,9 +35,4 @@ public class SchedulerCheckpoint {
      * Time taken in milliseconds.
      */
     private Long lastRunDurationMs;
-
-    /**
-     * Last processed envelope.
-     */
-    private String lastProcessedEnvelopeId;
 }
